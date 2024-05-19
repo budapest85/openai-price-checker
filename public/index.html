@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Buscar Productos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            text-align: center;
+            padding-top: 50px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+        }
+        .producto {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        .producto img {
+            max-width: 100px;
+            display: block;
+            margin: 0 auto 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Buscar Productos</h1>
+        <form id="searchForm">
+            <input type="text" id="producto" name="producto" placeholder="Introduce el nombre del producto" required>
+            <input type="submit" value="Buscar">
+        </form>
+        <div id="resultados"></div>
+    </div>
+
+    <script>
+        document.getElementById('searchForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var producto = document.getElementById('producto').value;
+
+            fetch('/.netlify/functions/fetch-prices', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ producto: producto })
+            })
+            .then(response => response.json())
+            .then(data => {
+                var resultados = document.getElementById('resultados');
+                resultados.innerHTML = '';
+
+                var productos = data.result.split('\n'); // Suponiendo que cada producto está en una nueva línea
+                productos.forEach(function(producto) {
+                    if (producto.trim()) {
+                        var partes = producto.split('|'); // Suponiendo que los datos están separados por "|"
+                        var nombre = partes[0];
+                        var precio = partes[1];
+                        var envio = partes[2];
+                        var tienda = partes[3];
+                        var imagenUrl = partes[4];
+
+                        var productoDiv = document.createElement('div');
+                        productoDiv.className = 'producto';
+                        productoDiv.innerHTML = `
+                            <h3>${nombre}</h3>
+                            <img src="${imagenUrl}" alt="${nombre}">
+                            <p>Precio: ${precio}</p>
+                            <p>Envío: ${envio}</p>
+                            <p>Tienda: ${tienda}</p>
+                        `;
+                        resultados.appendChild(productoDiv);
+                    }
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    </script>
+</body>
+</html>
