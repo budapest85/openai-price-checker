@@ -23,14 +23,14 @@ exports.handler = async (event) => {
         const url = 'https://api.openai.com/v1/chat/completions';
 
         const messages = [
-            { role: 'system', content: 'Eres un asistente que ayuda a encontrar los mejores precios para productos.' },
-            { role: 'user', content: `Encuentra los mejores precios para: ${producto}. Incluye detalles como el precio, el costo de envío, la tienda online, y la URL de la imagen del producto.` }
+            { role: 'system', content: 'Eres un asistente de compras en línea. Ayudas a los usuarios a encontrar los mejores precios para productos específicos.' },
+            { role: 'user', content: `Estoy buscando información sobre el producto "${producto}". Por favor, proporciona una lista de tiendas en línea, precios, costos de envío y URLs de imágenes de productos.` }
         ];
 
         const data = {
             model: 'gpt-3.5-turbo',
             messages: messages,
-            max_tokens: 150
+            max_tokens: 250  // Incrementar el número de tokens para permitir respuestas más detalladas
         };
 
         console.log('Enviando solicitud a OpenAI:', data);
@@ -48,6 +48,7 @@ exports.handler = async (event) => {
 
         if (!response.ok) {
             const errorText = await response.text();
+            console.error('Error en la respuesta de OpenAI:', errorText);
             throw new Error(`Error de OpenAI: ${response.statusText} - ${errorText}`);
         }
 
@@ -61,13 +62,28 @@ exports.handler = async (event) => {
 
         console.log('Texto de resultado de OpenAI:', resultText);
 
+        // Extraer la información de la respuesta generada
+        const productos = resultText.split('\n').map(line => {
+            const partes = line.split('|');
+            if (partes.length === 4) {
+                return {
+                    nombre: partes[0].trim(),
+                    precio: partes[1].trim(),
+                    envio: partes[2].trim(),
+                    tienda: partes[3].trim(),
+                    imagenUrl: partes[4] ? partes[4].trim() : ''  // Asumimos que la URL de la imagen puede estar en la cuarta posición
+                };
+            }
+            return null;
+        }).filter(producto => producto !== null);
+
         return {
             statusCode: 200,
             headers: {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
             },
-            body: JSON.stringify({ result: resultText })
+            body: JSON.stringify({ productos })
         };
     } catch (error) {
         console.error('Error en la función Lambda:', error);
