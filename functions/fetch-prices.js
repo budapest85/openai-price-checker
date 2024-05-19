@@ -34,12 +34,19 @@ exports.handler = async (event) => {
             logger.log('Procesando línea:', line);
             const partes = line.split('|');
             if (partes.length >= 6) {
+                let imagenUrl = partes[4].trim();
+                // Si la URL de la imagen está en formato markdown, extraer la URL
+                const imagenMatch = imagenUrl.match(/\[.*?\]\((.*?)\)/);
+                if (imagenMatch) {
+                    imagenUrl = imagenMatch[1];
+                }
+
                 return {
                     nombre: partes[0].trim(),
                     precio: partes[1].trim(),
                     envio: partes[2].trim(),
                     tienda: partes[3].trim(),
-                    imagenUrl: partes[4].trim(),
+                    imagenUrl: imagenUrl,
                     productoUrl: partes[5].trim()
                 };
             }
