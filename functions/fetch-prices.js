@@ -26,8 +26,8 @@ exports.handler = async (event) => {
         const resultText = await fetchFromOpenAI(prompt);
         logger.log('Texto de resultado de OpenAI:', resultText);
 
-        if (!resultText || typeof resultText !== 'string') {
-            throw new Error('El texto de resultado de OpenAI es inválido');
+        if (!resultText || typeof resultText !== 'string' || resultText.trim() === '') {
+            throw new Error('El texto de resultado de OpenAI es inválido o está vacío');
         }
 
         const lineas = resultText.split('\n');
@@ -52,28 +52,4 @@ exports.handler = async (event) => {
                     envio: partes[2].trim(),
                     tienda: partes[3].trim(),
                     imagenUrl: imagenUrl,
-                    productoUrl: partes[5].trim()
-                };
-            }
-            logger.warn('Línea con formato incorrecto:', line);
-            return null;
-        }).filter(producto => producto !== null);
-
-        logger.log('Productos procesados:', productos);
-
-        return {
-            statusCode: 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            body: JSON.stringify({ productos })
-        };
-    } catch (error) {
-        logger.error('Error en la función Lambda:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message })
-        };
-    }
-};
+                    productoUrl: partes[
