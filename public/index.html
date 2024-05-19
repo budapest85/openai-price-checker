@@ -61,6 +61,7 @@
             }
 
             document.getElementById('loading').style.display = 'block';
+            console.log('Enviando solicitud con producto:', producto);
 
             fetch('/.netlify/functions/fetch-prices', {
                 method: 'POST',
@@ -70,12 +71,14 @@
                 body: JSON.stringify({ producto: producto })
             })
             .then(response => {
+                console.log('Respuesta recibida:', response);
                 if (!response.ok) {
                     throw new Error('Error en la respuesta del servidor: ' + response.statusText);
                 }
                 return response.json();
             })
             .then(data => {
+                console.log('Datos recibidos:', data);
                 document.getElementById('loading').style.display = 'none';
                 var resultados = document.getElementById('resultados');
                 resultados.innerHTML = '';
@@ -101,3 +104,10 @@
             .catch(error => {
                 console.error('Error:', error);
                 document.getElementById('loading').style.display = 'none';
+                var resultados = document.getElementById('resultados');
+                resultados.innerHTML = '<p class="error">Ocurrió un error al buscar los productos.</p>';
+            });
+        });
+    </script>
+</body>
+</html>
