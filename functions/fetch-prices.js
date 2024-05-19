@@ -20,7 +20,7 @@ exports.handler = async (event) => {
             throw new Error('La clave API de OpenAI no está configurada');
         }
 
-        const url = 'https://api.openai.com/v1/engines/davinci-codex/completions';
+        const url = 'https://api.openai.com/v1/engines/text-davinci-003/completions';
 
         const prompt = `Encuentra los mejores precios para: ${producto}. Incluye detalles como el precio, el costo de envío, la tienda online, y la URL de la imagen del producto.`;
 
