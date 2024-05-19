@@ -43,6 +43,7 @@ exports.handler = async (event) => {
 
                 // Validar que la URL de la imagen sea una URL válida
                 if (!/^https?:\/\/.*\.(jpg|jpeg|png|gif)$/.test(imagenUrl)) {
+                    logger.warn('URL de imagen inválida:', imagenUrl);
                     imagenUrl = ''; // URL inválida, establecer como cadena vacía
                 }
 
