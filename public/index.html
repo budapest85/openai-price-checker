@@ -89,11 +89,16 @@
                 }
 
                 data.productos.forEach(function(producto) {
+                    var imagenUrl = producto.imagenUrl;
+                    if (!imagenUrl || imagenUrl.trim() === "") {
+                        imagenUrl = "URL_ALTERNATIVA_DE_IMAGEN"; // URL de imagen alternativa
+                    }
+
                     var productoDiv = document.createElement('div');
                     productoDiv.className = 'producto';
                     productoDiv.innerHTML = `
                         <h3><a href="${producto.productoUrl}" target="_blank">${producto.nombre}</a></h3>
-                        <img src="${producto.imagenUrl}" alt="${producto.nombre}">
+                        <img src="${imagenUrl}" alt="${producto.nombre}">
                         <p>Precio: ${producto.precio}</p>
                         <p>Envío: ${producto.envio}</p>
                         <p>Tienda: ${producto.tienda}</p>
