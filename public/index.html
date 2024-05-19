@@ -19,23 +19,37 @@
 </head>
 <body>
     <h1>Listado de Productos</h1>
+    <input type="text" id="buscador" placeholder="Buscar producto" />
+    <button id="buscar-btn">Buscar</button>
     <div id="productos-list"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const fetchProductos = async () => {
+            const buscarBtn = document.getElementById('buscar-btn');
+            const buscador = document.getElementById('buscador');
+            const productosList = document.getElementById('productos-list');
+
+            buscarBtn.addEventListener('click', async () => {
+                const producto = buscador.value.trim();
+                if (producto) {
+                    await fetchProductos(producto);
+                }
+            });
+
+            const fetchProductos = async (producto) => {
                 try {
                     const response = await fetch('/.netlify/functions/fetch-prices', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ producto: 'nombre_del_producto' })
+                        body: JSON.stringify({ producto })
                     });
 
                     const data = await response.json();
 
-                    const productosList = document.getElementById('productos-list');
+                    // Limpiar la lista de productos antes de agregar los nuevos
+                    productosList.innerHTML = '';
 
                     if (!data.productos || !Array.isArray(data.productos)) {
                         console.error('El formato de datos de productos no es válido:', data);
@@ -82,8 +96,6 @@
                     console.error('Error al obtener los productos:', error);
                 }
             };
-
-            fetchProductos();
         });
     </script>
 </body>
