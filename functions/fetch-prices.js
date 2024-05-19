@@ -18,7 +18,7 @@ exports.handler = async (event) => {
         logger.log('Producto recibido:', { producto });
 
         const prompt = `Estoy buscando información sobre el producto "${producto}". 
-                        Proporciona una lista de productos de Amazon, incluyendo el nombre del producto, 
+                        Proporciona una lista de productos disponibles en línea, incluyendo el nombre del producto, 
                         precio, costo de envío, tienda, URL de la imagen del producto y URL del producto, 
                         separados por "|". Cada producto debe estar en una nueva línea. 
                         El formato debe ser: Nombre del producto | Precio | Costo de envío | Tienda | URL de la imagen | URL del producto.`;
