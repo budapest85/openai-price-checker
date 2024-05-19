@@ -2,7 +2,7 @@ const fetch = require('node-fetch');
 
 exports.handler = async (event) => {
     const { producto } = JSON.parse(event.body);
-    const api_key = 'process.env.OPENAI_API_KEY';  // Reemplaza con tu clave de API de OpenAI
+    const api_key = process.env.OPENAI_API_KEY;  // Usar la variable de entorno
     const url = 'https://api.openai.com/v1/engines/davinci-codex/completions';
 
     const prompt = `Encuentra los mejores precios para: ${producto}. Incluye detalles como el precio, el costo de envío, la tienda online, y la URL de la imagen del producto.`;
