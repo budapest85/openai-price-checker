@@ -57,6 +57,8 @@
                     }
 
                     data.productos.forEach(producto => {
+                        console.log('Producto:', producto); // Log para depuración
+
                         const productoDiv = document.createElement('div');
                         productoDiv.classList.add('producto');
 
@@ -81,6 +83,7 @@
                         img.height = 100;
                         img.src = producto.imagenUrl ? producto.imagenUrl : 'default-icon.png';
                         img.alt = producto.imagenUrl ? producto.nombre : 'Sin imagen';
+                        console.log('URL de la imagen:', producto.imagenUrl); // Log para depuración
                         productoDiv.appendChild(img);
 
                         const enlace = document.createElement('a');
