@@ -17,7 +17,11 @@ exports.handler = async (event) => {
 
         logger.log('Producto recibido:', { producto });
 
-        const prompt = `Estoy buscando información sobre el producto "${producto}". Proporciona una lista de tiendas en línea, precios, costos de envío, URLs de imágenes de productos, y URLs de productos, separados por |.`;
+        const prompt = `Estoy buscando información sobre el producto "${producto}". 
+                        Proporciona una lista de tiendas en línea, precios, costos de envío, 
+                        URLs de imágenes de productos, y URLs de productos, separados por "|". 
+                        Cada producto debe estar en una nueva línea. El formato debe ser: 
+                        Nombre del producto | Precio | Costo de envío | Tienda | URL de la imagen | URL del producto.`;
 
         const resultText = await fetchFromOpenAI(prompt);
         logger.log('Texto de resultado de OpenAI:', resultText);
@@ -35,8 +39,8 @@ exports.handler = async (event) => {
                     precio: partes[1].trim(),
                     envio: partes[2].trim(),
                     tienda: partes[3].trim(),
-                    imagenUrl: partes[4] ? partes[4].trim() : '',
-                    productoUrl: partes[5] ? partes[5].trim() : ''
+                    imagenUrl: partes[4].trim(),
+                    productoUrl: partes[5].trim()
                 };
             }
             logger.warn('Línea con formato incorrecto:', line);
