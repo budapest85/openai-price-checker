@@ -19,7 +19,7 @@ exports.handler = async (event) => {
 
         const prompt = `Estoy buscando información sobre el producto "${producto}". 
                         Proporciona una lista de tiendas en línea, precios, costos de envío, 
-                        URLs de imágenes de productos, y URLs de productos, separados por "|". 
+                        la imagen del producto al que corresponsa su URL, y la URL de cada uno de estos productos, separados por "|". 
                         Cada producto debe estar en una nueva línea. El formato debe ser: 
                         Nombre del producto | Precio | Costo de envío | Tienda | URL de la imagen | URL del producto.`;
 
@@ -39,6 +39,11 @@ exports.handler = async (event) => {
                 const imagenMatch = imagenUrl.match(/\[.*?\]\((.*?)\)/);
                 if (imagenMatch) {
                     imagenUrl = imagenMatch[1];
+                }
+
+                // Validar que la URL de la imagen sea una URL válida
+                if (!/^https?:\/\/.*\.(jpg|jpeg|png|gif)$/.test(imagenUrl)) {
+                    imagenUrl = ''; // URL inválida, establecer como cadena vacía
                 }
 
                 return {
