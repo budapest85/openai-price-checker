@@ -58,8 +58,8 @@ exports.handler = async (event) => {
         if (!result.choices || result.choices.length === 0) {
             throw new Error('No se recibieron resultados de OpenAI');
         }
-        const resultText = result.choices[0].message.content;
 
+        const resultText = result.choices[0].message.content;
         console.log('Texto de resultado de OpenAI:', resultText);
 
         // Verificar que el texto de resultado no esté vacío ni undefined
