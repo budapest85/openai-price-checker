@@ -22,12 +22,10 @@ exports.handler = async (event) => {
         const resultText = await fetchFromOpenAI(prompt);
         logger.log('Texto de resultado de OpenAI:', resultText);
 
-        // Verificar que el texto de resultado no esté vacío ni undefined
         if (!resultText || typeof resultText !== 'string') {
             throw new Error('El texto de resultado de OpenAI es inválido');
         }
 
-        // Extraer la información de la respuesta generada
         const productos = resultText.split('\n').map(line => {
             logger.log('Procesando línea:', line);
             const partes = line.split('|');
