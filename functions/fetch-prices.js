@@ -29,13 +29,13 @@ exports.handler = async (event) => {
         const productos = resultText.split('\n').map(line => {
             logger.log('Procesando línea:', line);
             const partes = line.split('|');
-            if (partes.length >= 5) {
+            if (partes.length >= 6) {
                 return {
                     nombre: partes[0].trim(),
                     precio: partes[1].trim(),
                     envio: partes[2].trim(),
                     tienda: partes[3].trim(),
-                    imagenUrl: partes[4].trim(),
+                    imagenUrl: partes[4] ? partes[4].trim() : '',
                     productoUrl: partes[5] ? partes[5].trim() : ''
                 };
             }
