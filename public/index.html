@@ -54,10 +54,20 @@
                 },
                 body: JSON.stringify({ producto: producto })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 var resultados = document.getElementById('resultados');
                 resultados.innerHTML = '';
+
+                if (data.error) {
+                    resultados.innerText = `Error: ${data.error}`;
+                    return;
+                }
 
                 var productos = data.result.split('\n'); // Suponiendo que cada producto está en una nueva línea
                 productos.forEach(function(producto) {
@@ -82,7 +92,10 @@
                     }
                 });
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('resultados').innerText = `Error: ${error.message}`;
+            });
         });
     </script>
 </body>
