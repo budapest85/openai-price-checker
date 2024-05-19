@@ -30,6 +30,13 @@
             display: block;
             margin: 0 auto 10px;
         }
+        .error {
+            color: red;
+        }
+        .loading {
+            text-align: center;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -39,6 +46,7 @@
             <input type="text" id="producto" name="producto" placeholder="Introduce el nombre del producto" required>
             <input type="submit" value="Buscar">
         </form>
+        <div id="loading" class="loading" style="display: none;">Cargando...</div>
         <div id="resultados"></div>
     </div>
 
@@ -46,6 +54,13 @@
         document.getElementById('searchForm').addEventListener('submit', function(event) {
             event.preventDefault();
             var producto = document.getElementById('producto').value;
+
+            if (!producto.trim()) {
+                alert('Por favor, introduce un nombre de producto válido.');
+                return;
+            }
+
+            document.getElementById('loading').style.display = 'block';
 
             fetch('/.netlify/functions/fetch-prices', {
                 method: 'POST',
@@ -56,47 +71,33 @@
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
+                    throw new Error('Error en la respuesta del servidor: ' + response.statusText);
                 }
                 return response.json();
             })
             .then(data => {
+                document.getElementById('loading').style.display = 'none';
                 var resultados = document.getElementById('resultados');
                 resultados.innerHTML = '';
 
-                if (data.error) {
-                    resultados.innerText = `Error: ${data.error}`;
+                if (!data.productos || data.productos.length === 0) {
+                    resultados.innerHTML = '<p>No se encontraron productos.</p>';
                     return;
                 }
 
-                var productos = data.result.split('\n'); // Suponiendo que cada producto está en una nueva línea
-                productos.forEach(function(producto) {
-                    if (producto.trim()) {
-                        var partes = producto.split('|'); // Suponiendo que los datos están separados por "|"
-                        var nombre = partes[0];
-                        var precio = partes[1];
-                        var envio = partes[2];
-                        var tienda = partes[3];
-                        var imagenUrl = partes[4];
-
-                        var productoDiv = document.createElement('div');
-                        productoDiv.className = 'producto';
-                        productoDiv.innerHTML = `
-                            <h3>${nombre}</h3>
-                            <img src="${imagenUrl}" alt="${nombre}">
-                            <p>Precio: ${precio}</p>
-                            <p>Envío: ${envio}</p>
-                            <p>Tienda: ${tienda}</p>
-                        `;
-                        resultados.appendChild(productoDiv);
-                    }
+                data.productos.forEach(function(producto) {
+                    var productoDiv = document.createElement('div');
+                    productoDiv.className = 'producto';
+                    productoDiv.innerHTML = `
+                        <h3>${producto.nombre}</h3>
+                        <img src="${producto.imagenUrl}" alt="${producto.nombre}">
+                        <p>Precio: ${producto.precio}</p>
+                        <p>Envío: ${producto.envio}</p>
+                        <p>Tienda: ${producto.tienda}</p>
+                    `;
+                    resultados.appendChild(productoDiv);
                 });
             })
             .catch(error => {
                 console.error('Error:', error);
-                document.getElementById('resultados').innerText = `Error: ${error.message}`;
-            });
-        });
-    </script>
-</body>
-</html>
+                document.getElementById('loading').style.display = 'none';
