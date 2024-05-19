@@ -18,10 +18,10 @@ exports.handler = async (event) => {
         logger.log('Producto recibido:', { producto });
 
         const prompt = `Estoy buscando información sobre el producto "${producto}". 
-                        Proporciona una lista de tiendas en línea, precios, costos de envío, 
-                        URLs de imágenes de productos, y URLs de productos, separados por "|". 
-                        Cada producto debe estar en una nueva línea. El formato debe ser: 
-                        Nombre del producto | Precio | Costo de envío | Tienda | URL de la imagen | URL del producto.`;
+                        Proporciona una lista de productos de Amazon, incluyendo el nombre del producto, 
+                        precio, costo de envío, tienda, URL de la imagen del producto y URL del producto, 
+                        separados por "|". Cada producto debe estar en una nueva línea. 
+                        El formato debe ser: Nombre del producto | Precio | Costo de envío | Tienda | URL de la imagen | URL del producto.`;
 
         const resultText = await fetchFromOpenAI(prompt);
         logger.log('Texto de resultado de OpenAI:', resultText);
@@ -30,7 +30,6 @@ exports.handler = async (event) => {
             throw new Error('El texto de resultado de OpenAI es inválido');
         }
 
-        // Dividir la respuesta en líneas
         const lineas = resultText.split('\n');
         logger.log('Líneas de productos obtenidas:', lineas);
 
@@ -40,13 +39,6 @@ exports.handler = async (event) => {
             if (partes.length >= 6) {
                 let imagenUrl = partes[4].trim();
                 logger.log('URL de imagen inicial:', imagenUrl);
-
-                // Si la URL de la imagen está en formato markdown, extraer la URL
-                const imagenMatch = imagenUrl.match(/\[.*?\]\((.*?)\)/);
-                if (imagenMatch) {
-                    imagenUrl = imagenMatch[1];
-                    logger.log('URL de imagen extraída del markdown:', imagenUrl);
-                }
 
                 // Validar que la URL de la imagen sea una URL válida
                 if (!/^https?:\/\/.*\.(jpg|jpeg|png|gif)$/.test(imagenUrl)) {
@@ -80,8 +72,4 @@ exports.handler = async (event) => {
     } catch (error) {
         logger.error('Error en la función Lambda:', error);
         return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message })
-        };
-    }
-};
+            statusC
