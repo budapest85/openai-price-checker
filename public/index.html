@@ -12,6 +12,12 @@
             text-align: center;
             padding-top: 50px;
         }
+        .search-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
         input[type="text"] {
             width: 80%;
             padding: 10px;
@@ -37,15 +43,21 @@
             text-align: center;
             margin: 20px 0;
         }
+        .logo {
+            max-width: 100px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Buscar Productos</h1>
-        <form id="searchForm">
-            <input type="text" id="producto" name="producto" placeholder="Introduce el nombre del producto" required>
-            <input type="submit" value="Buscar">
-        </form>
+        <div class="search-container">
+            <img src="dog-logo.webp" alt="Logo" class="logo">
+            <form id="searchForm">
+                <input type="text" id="producto" name="producto" placeholder="Introduce el nombre del producto" required>
+                <input type="submit" value="Buscar">
+            </form>
+        </div>
         <div id="loading" class="loading" style="display: none;">Cargando...</div>
         <div id="resultados"></div>
     </div>
