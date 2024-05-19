@@ -20,12 +20,16 @@ exports.handler = async (event) => {
             throw new Error('La clave API de OpenAI no está configurada');
         }
 
-        const url = 'https://api.openai.com/v1/engines/text-davinci-003/completions';
+        const url = 'https://api.openai.com/v1/chat/completions';
 
-        const prompt = `Encuentra los mejores precios para: ${producto}. Incluye detalles como el precio, el costo de envío, la tienda online, y la URL de la imagen del producto.`;
+        const messages = [
+            { role: 'system', content: 'Eres un asistente que ayuda a encontrar los mejores precios para productos.' },
+            { role: 'user', content: `Encuentra los mejores precios para: ${producto}. Incluye detalles como el precio, el costo de envío, la tienda online, y la URL de la imagen del producto.` }
+        ];
 
         const data = {
-            prompt: prompt,
+            model: 'gpt-4-turbo',
+            messages: messages,
             max_tokens: 150
         };
 
@@ -53,7 +57,7 @@ exports.handler = async (event) => {
         if (!result.choices || result.choices.length === 0) {
             throw new Error('No se recibieron resultados de OpenAI');
         }
-        const resultText = result.choices[0].text;
+        const resultText = result.choices[0].message.content;
 
         console.log('Texto de resultado de OpenAI:', resultText);
 
