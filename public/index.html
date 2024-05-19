@@ -38,6 +38,7 @@
 
             const fetchProductos = async (producto) => {
                 try {
+                    console.log('Buscando producto:', producto); // Log para depuración
                     const response = await fetch('/.netlify/functions/fetch-prices', {
                         method: 'POST',
                         headers: {
@@ -47,6 +48,7 @@
                     });
 
                     const data = await response.json();
+                    console.log('Datos recibidos:', data); // Log para depuración
 
                     // Limpiar la lista de productos antes de agregar los nuevos
                     productosList.innerHTML = '';
