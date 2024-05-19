@@ -15,13 +15,4 @@ exports.handler = async (event) => {
         }
 
         console.log('Producto recibido:', producto);
-        const api_key = process.env.OPENAI_API_KEY;  // Usar la variable de entorno
-        if (!api_key) {
-            throw new Error('La clave API de OpenAI no está configurada');
-        }
-
-        const url = 'https://api.openai.com/v1/engines/davinci-codex/completions';
-
-        const prompt = `Encuentra los mejores precios para: ${producto}. Incluye detalles como el precio, el costo de envío, la tienda online, y la URL de la imagen del producto.`;
-
-      
+        const api_k
