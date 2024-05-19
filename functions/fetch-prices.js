@@ -9,7 +9,7 @@ exports.handler = async (event) => {
         }
 
         const { producto } = JSON.parse(event.body);
-        
+
         if (!producto) {
             throw new Error('El campo "producto" está vacío o no está presente');
         }
@@ -24,7 +24,7 @@ exports.handler = async (event) => {
 
         const messages = [
             { role: 'system', content: 'Eres un asistente de compras en línea. Ayudas a los usuarios a encontrar los mejores precios para productos específicos.' },
-            { role: 'user', content: `Estoy buscando información sobre el producto "${producto}". Por favor, proporciona una lista de tiendas en línea, precios, costos de envío y URLs de imágenes de productos.` }
+            { role: 'user', content: `Estoy buscando información sobre el producto "${producto}". Proporciona una lista de tiendas en línea, precios, costos de envío y URLs de imágenes de productos, separados por |` }
         ];
 
         const data = {
