@@ -30,15 +30,22 @@ exports.handler = async (event) => {
             throw new Error('El texto de resultado de OpenAI es inválido');
         }
 
-        const productos = resultText.split('\n').map(line => {
+        // Dividir la respuesta en líneas
+        const lineas = resultText.split('\n');
+        logger.log('Líneas de productos obtenidas:', lineas);
+
+        const productos = lineas.map(line => {
             logger.log('Procesando línea:', line);
             const partes = line.split('|');
             if (partes.length >= 6) {
                 let imagenUrl = partes[4].trim();
+                logger.log('URL de imagen inicial:', imagenUrl);
+
                 // Si la URL de la imagen está en formato markdown, extraer la URL
                 const imagenMatch = imagenUrl.match(/\[.*?\]\((.*?)\)/);
                 if (imagenMatch) {
                     imagenUrl = imagenMatch[1];
+                    logger.log('URL de imagen extraída del markdown:', imagenUrl);
                 }
 
                 // Validar que la URL de la imagen sea una URL válida
