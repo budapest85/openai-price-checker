@@ -38,7 +38,7 @@
 
             const fetchProductos = async (producto) => {
                 try {
-                    console.log('Buscando producto:', producto); // Log para depuración
+                    console.log('Buscando producto:', producto);
                     const response = await fetch('/.netlify/functions/fetch-prices', {
                         method: 'POST',
                         headers: {
@@ -48,9 +48,8 @@
                     });
 
                     const data = await response.json();
-                    console.log('Datos recibidos:', data); // Log para depuración
+                    console.log('Datos recibidos:', data);
 
-                    // Limpiar la lista de productos antes de agregar los nuevos
                     productosList.innerHTML = '';
 
                     if (!data.productos || !Array.isArray(data.productos)) {
@@ -59,7 +58,7 @@
                     }
 
                     data.productos.forEach(producto => {
-                        console.log('Producto:', producto); // Log para depuración
+                        console.log('Producto:', producto);
 
                         const productoDiv = document.createElement('div');
                         productoDiv.classList.add('producto');
@@ -85,7 +84,7 @@
                         img.height = 100;
                         img.src = producto.imagenUrl ? producto.imagenUrl : 'default-icon.png';
                         img.alt = producto.imagenUrl ? producto.nombre : 'Sin imagen';
-                        console.log('URL de la imagen:', producto.imagenUrl); // Log para depuración
+                        console.log('URL de la imagen:', producto.imagenUrl);
                         productoDiv.appendChild(img);
 
                         const enlace = document.createElement('a');
