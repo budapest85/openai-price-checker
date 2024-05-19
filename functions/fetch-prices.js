@@ -58,38 +58,4 @@ exports.handler = async (event) => {
         if (!result.choices || result.choices.length === 0) {
             throw new Error('No se recibieron resultados de OpenAI');
         }
-        const resultText = result.choices[0].message.content;
-
-        console.log('Texto de resultado de OpenAI:', resultText);
-
-        // Extraer la información de la respuesta generada
-        const productos = resultText.split('\n').map(line => {
-            const partes = line.split('|');
-            if (partes.length === 4) {
-                return {
-                    nombre: partes[0].trim(),
-                    precio: partes[1].trim(),
-                    envio: partes[2].trim(),
-                    tienda: partes[3].trim(),
-                    imagenUrl: partes[4] ? partes[4].trim() : ''  // Asumimos que la URL de la imagen puede estar en la cuarta posición
-                };
-            }
-            return null;
-        }).filter(producto => producto !== null);
-
-        return {
-            statusCode: 200,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': '*'
-            },
-            body: JSON.stringify({ productos })
-        };
-    } catch (error) {
-        console.error('Error en la función Lambda:', error);
-        return {
-            statusCode: 500,
-            body: JSON.stringify({ error: error.message })
-        };
-    }
-};
+        const re
