@@ -19,7 +19,7 @@ exports.handler = async (event) => {
 
         const prompt = `Estoy buscando información sobre el producto "${producto}". 
                         Proporciona una lista de tiendas en línea, precios, costos de envío, 
-                        la imagen del producto al que corresponsa su URL, y la URL de cada uno de estos productos, separados por "|". 
+                        para cada uno de estos productos incorpora su imagen del producto, los titulos deben redirigir a la URL donde se aloja cada uno de estos productos, separados por "|". 
                         Cada producto debe estar en una nueva línea. El formato debe ser: 
                         Nombre del producto | Precio | Costo de envío | Tienda | URL de la imagen | URL del producto.`;
 
