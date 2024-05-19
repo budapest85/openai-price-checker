@@ -1,39 +1,65 @@
-const fetch = require('node-fetch');
+const { fetchFromOpenAI } = require('./utils/openai');
+const logger = require('./utils/logger');
 
 exports.handler = async (event) => {
+    logger.log('Evento recibido:', event);
+
     try {
-        const { producto } = JSON.parse(event.body);
-        const api_key = process.env.OPENAI_API_KEY;
-        const url = 'https://api.openai.com/v1/completions';
-
-        const prompt = `Encuentra los mejores precios para: ${producto}. Incluye detalles como el precio, el costo de envío, la tienda online, y la URL de la imagen del producto.`;
-
-        const data = {
-            model: 'text-davinci-003',
-            prompt: prompt,
-            max_tokens: 150
-        };
-
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${api_key}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Error en la solicitud a OpenAI: ${response.statusText}`);
+        if (!event.body) {
+            throw new Error('El cuerpo de la solicitud está vacío');
         }
 
-        const result = await response.json();
-        const resultText = result.choices[0].text;
+        const { producto } = JSON.parse(event.body);
+
+        if (!producto) {
+            throw new Error('El campo "producto" está vacío o no está presente');
+        }
+
+        logger.log('Producto recibido:', { producto });
+
+        const prompt = `Estoy buscando información sobre el producto "${producto}". 
+                        Proporciona una lista de tiendas en línea, precios, costos de envío, 
+                        URLs de imágenes de productos, y URLs de productos, separados por "|". 
+                        Cada producto debe estar en una nueva línea. El formato debe ser: 
+                        Nombre del producto | Precio | Costo de envío | Tienda | URL de la imagen | URL del producto.`;
+
+        const resultText = await fetchFromOpenAI(prompt);
+        logger.log('Texto de resultado de OpenAI:', resultText);
+
+        if (!resultText || typeof resultText !== 'string') {
+            throw new Error('El texto de resultado de OpenAI es inválido');
+        }
 
         const productos = resultText.split('\n').map(line => {
-            const [nombre, precio, envio, tienda, imagenUrl] = line.split('|').map(part => part.trim());
-            return { nombre, precio, envio, tienda, imagenUrl, productoUrl: '#' };
-        });
+            logger.log('Procesando línea:', line);
+            const partes = line.split('|');
+            if (partes.length >= 6) {
+                let imagenUrl = partes[4].trim();
+                // Si la URL de la imagen está en formato markdown, extraer la URL
+                const imagenMatch = imagenUrl.match(/\[.*?\]\((.*?)\)/);
+                if (imagenMatch) {
+                    imagenUrl = imagenMatch[1];
+                }
+
+                // Validar que la URL de la imagen sea una URL válida
+                if (!/^https?:\/\/.*\.(jpg|jpeg|png|gif)$/.test(imagenUrl)) {
+                    imagenUrl = ''; // URL inválida, establecer como cadena vacía
+                }
+
+                return {
+                    nombre: partes[0].trim(),
+                    precio: partes[1].trim(),
+                    envio: partes[2].trim(),
+                    tienda: partes[3].trim(),
+                    imagenUrl: imagenUrl,
+                    productoUrl: partes[5].trim()
+                };
+            }
+            logger.warn('Línea con formato incorrecto:', line);
+            return null;
+        }).filter(producto => producto !== null);
+
+        logger.log('Productos procesados:', productos);
 
         return {
             statusCode: 200,
@@ -44,7 +70,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({ productos })
         };
     } catch (error) {
-        console.error('Error en la función:', error);
+        logger.error('Error en la función Lambda:', error);
         return {
             statusCode: 500,
             body: JSON.stringify({ error: error.message })
