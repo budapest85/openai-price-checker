@@ -31,4 +31,60 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({ producto: 'nombre_del_producto' })
-         
+                    });
+
+                    const data = await response.json();
+
+                    const productosList = document.getElementById('productos-list');
+
+                    if (!data.productos || !Array.isArray(data.productos)) {
+                        console.error('El formato de datos de productos no es válido:', data);
+                        return;
+                    }
+
+                    data.productos.forEach(producto => {
+                        const productoDiv = document.createElement('div');
+                        productoDiv.classList.add('producto');
+
+                        const nombre = document.createElement('h2');
+                        nombre.textContent = producto.nombre;
+                        productoDiv.appendChild(nombre);
+
+                        const precio = document.createElement('p');
+                        precio.textContent = `Precio: ${producto.precio}`;
+                        productoDiv.appendChild(precio);
+
+                        const envio = document.createElement('p');
+                        envio.textContent = `Envío: ${producto.envio}`;
+                        productoDiv.appendChild(envio);
+
+                        const tienda = document.createElement('p');
+                        tienda.textContent = `Tienda: ${producto.tienda}`;
+                        productoDiv.appendChild(tienda);
+
+                        const img = document.createElement('img');
+                        img.width = 100;
+                        img.height = 100;
+                        img.src = producto.imagenUrl ? producto.imagenUrl : 'default-icon.png';
+                        img.alt = producto.imagenUrl ? producto.nombre : 'Sin imagen';
+                        productoDiv.appendChild(img);
+
+                        const enlace = document.createElement('a');
+                        enlace.href = producto.productoUrl;
+                        enlace.target = '_blank';
+                        enlace.rel = 'noopener noreferrer';
+                        enlace.textContent = 'Ver Producto';
+                        productoDiv.appendChild(enlace);
+
+                        productosList.appendChild(productoDiv);
+                    });
+                } catch (error) {
+                    console.error('Error al obtener los productos:', error);
+                }
+            };
+
+            fetchProductos();
+        });
+    </script>
+</body>
+</html>
